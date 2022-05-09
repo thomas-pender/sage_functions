@@ -1,0 +1,110 @@
+BGW
+
+NAME
+	bgw - construct classical parameter BGW matrices.
+
+SYNOPSIS
+	bgw [PARAMETERS]... [OPTIONS]... [PARAMETERS | FILES]...
+
+DESCRIPTION
+	bgw invokes several different constructions: omega-circ BGWs, GHs, Hadi Kharaghani's OA construction, and matrix group substitutions.
+
+	MANDATORY
+		At least one option from aCcHh.
+		
+		-o outfile must be used for every invocation.
+
+		-i infile must be used whenever one of ag is used.
+
+		If one of acH are used, expects 2 parameters: (1) a prime power q and (2) an exponent d. If Used with H, d > 0; if used with ac, d > 1.
+
+		If C is used, expects 1 parameter: prime power q.
+
+
+	OPTIONAL OPTIONS
+		Any one of gpw.
+
+		gp perform matrix substitution as described below.
+
+		w constructs a weighing matrix.
+
+OPTIONS
+	-a
+		Invokes Hadi Kharaghani's OA construction. Must use -o outfile and -i infile. 
+
+		Expects 0 parameters.
+
+		The infile contains a weighing matrix of prime power weight q.
+
+		Performs the (d-1)-st iteration of Hadi's construction.
+
+		General use: bgw q d -a -i infile -o outfile
+
+	-C
+		Constructs the skew-symmetric generalilzed conference matrix with type II core over GF(q)*. Must use -o outfile.
+
+		Expects 0 parameters.
+
+		General use: bgw q -C -o outfile
+
+	-c
+		Constructs omega-circ BGW with classical parameters over GF(q)*. Must use -o outilfe.
+
+		Expects 0 parameters.
+
+		General use: bgw q d -c -o outfile
+
+	-g
+		Used in conjuction with any of Cc.
+
+		Constructs omega-circ BGW with classical parameters over cyclic matrix group. Must use -i infile and -o outfile.
+
+		The infile contains the matrix group generator with row entries seperated by ' ' and rows seperated by '\n'.
+
+		g expects 1 parameter: Order of matrix group, say G. This is in addition to the parameters required by Cc.
+
+		General use: bgw q d -cg G -i infile -o outfile OR bgw q -Cg G -i infile -o outfile
+
+	-H
+		Constructs classical parameter GHs over EA(q). Must use -o outfile.
+
+		Expects 0 parameters.
+
+		General use: bgw q d -H -o outfile
+
+	-h
+		Displays the current help page.
+
+	-i
+		Used with every instance of g.
+
+		Expects 1 parameter: Input file containing matrix group generator.
+
+	-o
+		Used for every invokation of bgw.
+
+		Expects 1 parameter: Output file to store constructed matrix.
+
+	-p
+		Constructs GH over EA(q) using permutation matrices.
+	
+		Used in conjuction with H.
+
+		General use: bgw q d -Hp -o outfile
+
+	-w
+		Constructs classical parameter weighing matrix.
+
+		Used in conjuction with Cc.
+
+		If used with C, constructs skew-symmetric conference matrix with zero diagonal and type II core.
+
+		If used with c, constructs classical parameter negacyclic BW.
+
+		General use: bgw q d -cw -o outfile OR bgw q -Cw -o outfile
+
+EXIT STATUS
+	0 if success.
+	1 otherwise.
+
+Written by Thomas Pender.

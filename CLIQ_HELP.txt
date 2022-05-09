@@ -1,0 +1,40 @@
+CLIQ
+
+NAME
+	cliq - invokes cliquer interface with sagemath.
+
+SYNOPSIS
+	cliq [FILE]... [OPTION]... [FILE]
+
+DESCRIPTION
+	cliq displays the clique polynomial or the stores the maximum cliques of input graph.
+
+	MANDATORY
+		Expects 1 parameter: Input file containing the adjacency matrix of a simple undirected graph.
+
+		-o outfile must be used with m.
+
+OPTIONS
+	-p
+		Displays the clique polynomial of input graph.
+
+		General use: cliq file -p
+
+	-h
+		Displays the current help page.
+
+	-m
+		Finds and stores maximum cliques.
+
+		General use: cliq file -o outfile
+
+	-o
+		Used in conjunction with m.
+
+		Expects 1 parameter: output file.
+
+EXIT STATUS
+	0 is success.
+	1 otherwise.
+
+Written by Thomas Pender.

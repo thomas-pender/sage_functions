@@ -1,0 +1,27 @@
+SIMPLEX
+
+NAME
+	simplex - constructs generalized simplex codes.
+
+SYNOPSIS
+	simplex [PARAMETERS]... [OPTION]... [FILE]
+
+DESCRIPTION
+	simplex employs the usual construction of the generalized simplex codes.
+
+	MANDATORY
+		Expects 2 parameters: (1) a prime power q (2) Exponent d > 1.
+	
+		Must use -o outfile for every invokation.
+
+OPTIONS
+	-o
+		Expects 1 parameter: Output file to store the code.
+
+		General use: simplex q d -o outfile
+
+EXIT STATUS
+	0 if success.
+	1 otherwise.
+
+Written by Thomas Pender.

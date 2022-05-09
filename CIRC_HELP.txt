@@ -1,0 +1,49 @@
+CIRC
+
+NAME
+	circ - constructs cyclic matrix groups.
+
+SYNOPSIS
+	circ [PARAMETERS]... [OPTIONS]... [PARAMETERS | FILES]	
+
+DESCRIPTION
+	circ constructs circulant and block circulant matrices.
+
+	MANDATORY
+		At least one option from CchNn.
+
+		-o outfile must be used for every invokation.
+
+		-i infile must be used whenever one of CN is used.
+
+		Expects 1 parameter: Dimension d of (block) matrix.
+
+OPTIONS
+	-C
+		Constructs block circulant matrix where entry (0,1) is supplied by -i infile.
+
+		General use: circ d -C -i infile -o outfile
+
+	-c 
+		Constructs circulant shift matrix of dimension d.
+
+		General use: circ d -c -o outfile.
+
+	-h
+		Displays current help page.
+
+	-N
+		Constructs block negacyclic matrix where entry (0,1) is supplied by -i infile.
+
+		General use: circ d -N -i infile -o outfile
+
+	-n
+		Constructs negacyclic shift matrix of dimension d.
+
+		General use: circ d -n -o outfile.
+
+EXIT STATUS
+	0 if success.
+	1 otherwise.
+
+Written by Thomas Pender.
