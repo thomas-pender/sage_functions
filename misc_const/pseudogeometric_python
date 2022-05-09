@@ -1,0 +1,40 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32m***ERROR:\e[0m"
+if [ $# -eq 0 ]; then echo "${ERR} \e[1;32mExpects input file.\e[0m" ; exit 1 ; fi
+
+python3 << EOF
+from sympy import *
+import sys
+
+f=open('$1','r')
+A=Matrix([[int(x) for x in y.split()] for y in f.read().split('\n')[:-1]])
+n,_=shape(A)
+k=sum(a for a in A.row(0))
+for i in range(1,n):
+    if A[0,i]==0:
+        mu=sum(a*b for a,b in zip(A.row(0),A.row(i)))
+        break
+for i in range(1,n):
+    if A[0,i]:
+        lam=sum(a*b for a,b in zip(A.row(0),A.row(i)))
+        break
+s,t,a=symbols('s t a')
+vertices=((s+1)*(s*t+a)/a)-n
+degree=(t+1)*s-k
+adj=s-1+t*(a-1)-lam
+not_adj=(t+1)*a-mu
+S=solve((vertices,degree,adj,not_adj),(s,t,a))
+flag=True
+for s in S:
+    _check=True
+    for i in s:
+        if i<=0:
+            _check=False
+            break
+    if _check:
+        flag=False
+        print('\n***Pseudo-geometric with parameters (s,t,a) = ',s,sep='',end='\n\n')
+if flag:
+    print('\n***SRG is not pseudogeometric.\n')
+EOF

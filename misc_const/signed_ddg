@@ -1,0 +1,42 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32mERROR:\e[0m"
+
+if [ $# -eq 0 ]; then echo -e "${ERR} \e[1;32mRequires parameters.\e[0m\n" ; exit 1 ; fi
+
+eval set -- $(getopt -o o:i: -- "$@")
+
+while [ -n "$1" ]; do
+case "$1" in
+-o) outfile="$2" ; shift ;;
+-i) infile="$2" ; shift ;;
+--) shift ; break ;;
+*) echo -e "${ERR} \e[1;32mInvalid options.\e[0m\n" ; exit 1 ;;
+esac
+shift
+done
+
+if [ -z "$outfile" -o -z "$infile" ]; then echo -e "${ERR} \e[1;32mRequires files.\e[0m\n" ; exit 1 ; fi
+
+sage -q 1> /dev/null << EOF
+load('./funcs.sage')
+f=open('$infile','r')
+H=matrix(rmspace([[int(x) for x in y.split()] for y in f.read().split('\n')]))
+v=H.nrows()
+n=1;
+while 1:
+    m=2*n*v+1
+    if is_prime_power(m):
+        break
+    n+=1
+W=reduce(skew_conf(m),2*v)
+r=matrix(v,v,lambda i,j: 1 if (i+j)%v==(v-1) else 0)
+g=matrix.circulant([0,1]+[0]*(v-2)); g[v-1,0]=-1
+G=[zero_matrix(v)]+[H*(g**i)*r for i in range(1,2*v+1)]
+X=block_matrix([[(lambda j: G[W[i,j]])(j) for j in range(m+1)] for i in range(m+1)])
+f=open('$outfile','w')
+for i in range(X.nrows()):
+    f.write(''.join('%3d' % x for x in X.row(i))+'\n')
+f.close()
+quit
+EOF

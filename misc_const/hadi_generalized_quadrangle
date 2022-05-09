@@ -1,0 +1,34 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32mERROR:\e[0m"
+
+if [ $# -eq 0 ]; then echo "${ERR} \e[1;32mRequires prime power parameter.\e[0m" ; exit 1 ; fi
+
+eval set -- $(getopt -o o: -- "$@")
+
+while [ -n "$1" ]; do
+case "$1" in
+-o) outfile="$2" ; shift ;;
+--) shift ; break ;;
+*) echo -e "${ERR} \e[1;32mInvalid options.\e[0m\n" ; exit 1 ;;
+esac
+shift
+done
+
+if [ -z "$outfile" ]; then echo -e "${ERR} \e[1;32mRequires output file.\e[0m\n" ; exit 1 ; fi
+
+sage -q 1> /dev/null << EOF
+load('./funcs.sage')
+q=$1
+W=reduce(skew_conf(q**2),q+1)
+C=matrix(q+1,q+1,lambda i,j: 1 if i!=j else 0)
+r=matrix(q+1,q+1,lambda i,j: 1 if (i+j)%(q+1)==q else 0)
+g=matrix.circulant([0,1]+[0]*(q-1))
+G=[C]+[(g**i)*r for i in range(1,q+2)]
+X=block_matrix([[(lambda j: G[W[i,j]])(j) for j in range(q**2+1)] for i in range(q**2+1)])
+f=open('$outfile','w')
+for i in range(X.nrows()):
+    f.write(' '.join(str(x) for x in X.row(i))+'\n')
+f.close()
+quit
+EOF

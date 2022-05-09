@@ -1,0 +1,28 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32mERROR:\e[0m"
+
+if [ $# -ne 4 ]; then echo -e "${ERR} \e[1;32mRequries parameters of SRG.\e[0m\n" ; exit 1 ; fi
+
+sage -q 1> /dev/null << EOF
+import sys
+var(' s t a ')
+vertices=((s+1)*(s*t+a)/a)-$1
+degree=s*(t+1)-$2
+lam=s-1+t*(a-1)-$3
+mu=a*(t+1)-$4
+D=solve((vertices,degree,lam,mu),(s,t,a),solution_dict=True)
+flag=True
+for d in D:
+    _check=True
+    for x in d.values():
+        if x<=0:
+            _check=False
+            break
+    if _check:
+        flag=False
+        sys.stderr.write('\n***Pseudo-geomeric with parameters (s, t, a) = (%d, %d, %d)\n\n' % (d[s], d[t], d[a]))
+if flag:
+    sys.stderr.write('\n***SRG is not geometric.\n\n')
+quit
+EOF

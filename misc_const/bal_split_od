@@ -1,0 +1,59 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32mERROR:\e[0m"
+
+if [ $# -eq 0 ]; then echo -e "${ERR} \e[1;32mRequires parameters.\e[0m\n" ; exit 1 ; fi
+
+eval set --$(getopt -o o:i: -- "$@")
+
+while [ -n "$1" ]; do
+case "$1" in
+-o) outfile="$2" ; shift ;;
+-i) infile="$2" ; shift ;;
+--) shift ; break ;;
+*) echo -e "${ERR} \e[1;32mInvalid options.\e[0m\n" ; exit 1 ;;
+esac
+shift
+done
+
+if [ -z "$outfile" -o -z "$infile" ]; then echo -e "${ERR} \e[1;32mRequires files.\e[0m\n"; exit 1; fi
+
+sage -q 1> /dev/null << EOF
+load('./funcs.sage')
+f=open('$infile','r')
+_a=rmspace(f.read().split('\n')[:-1])
+v=var(_a[0])
+H=matrix(SR,[[x for x in y.split()] for y in _a[1:]])
+h=[matrix(H.row(i)) for i in range(H.nrows())]
+hh=[matrix([[(lambda x: 1 if x in v else -1)(x) for x in y.row(0)]]) for y in h]
+K=matrix(2,2,[1,1,1,-1]).tensor_product(H)
+k=[matrix(K.row(i)) for i in range(K.nrows())]
+kk=[matrix([[(lambda x: 1 if x in v else -1)(x) for x in y.row(0)]]) for y in k]
+C=[x.transpose()*y for x,y in zip(hh,h)]
+n=H.nrows()
+m=2*n-1
+A=[C[0]]+C[1:]+C[:0:-1]
+B=[C[0]]+C[1:]+[-x for x in C[:0:-1]]
+A=[A]+[[0]*m for i in range(m-1)]
+B=[B]+[[0]*m for i in range(m-1)]
+for i in range(1,m):
+    for j in range(m):
+        if j:
+            A[i][j]=A[i-1][j-1]
+            B[i][j]=B[i-1][j-1]
+        else:
+            A[i][j]=A[i-1][m-1]
+            B[i][j]=B[i-1][m-1]
+A=block_matrix(A)
+B=block_matrix(B)
+G=kk[0].transpose()*k[0]
+E=block_matrix([[hh[0].transpose()*x] for x in k[1:]])
+F=block_matrix([[x.transpose()*h[0] for x in kk[1:]]])
+X=block_matrix([[G,F,-F],[E,A,B],[-E,B,A]])
+f=open('$outfile','w')
+f.write(' '.join(str(x) for x in v)+'\n')
+for i in range(X.nrows()):
+    f.write(''.join('%3s' % x for x in X.row(i))+'\n')
+f.close()
+quit
+EOF

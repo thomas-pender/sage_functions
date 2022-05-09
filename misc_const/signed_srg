@@ -1,0 +1,46 @@
+#!/bin/bash
+
+ERR="\n\e[1;5;7;32mERROR:\e[0m"
+
+if [ $# -eq 0 ]; then echo -e "${ERR} \e[1;32mRequires prime power parameter.\e[0m\n" ; exit 1 ; fi
+
+eval set -- $(getopt -o o: -- "$@")
+
+while [ -n "$1" ]; do
+case "$1" in
+-o) outfile="$2" ; shift ;;
+--) shift ; break ;;
+*) echo -e "${ERR} \e[1;32mInvalid options.\e[0m\n" ; exit 1 ;;
+esac
+shift
+done
+
+if [ -z "$outfile" ]; then echo -e "${ERR} \e[1;32mRequires output file.\e[0m\n" ; exit 1 ; fi
+if [ $(expr $1 % 2) -eq 0 ]; then echo -e "${ERR} \e[1;32mRequires \e[4modd\e[24m prime power parameter.\e[0m\n" ; exit 1 ; fi
+
+sage -q 1> /dev/null << EOF
+load('./funcs.sage')
+q=$1
+W=reduce(skew_conf(q**2),2*q+2)
+C=reduce(matrix(circ(q,2)),2)
+for i in range(q+1):
+    for j in range(q+1):
+        if C[i,j]:
+            C[i,j]=(-1)**C[i,j]
+g=matrix.circulant([0,1]+[0]*(q-1)); g[q,0]=-1
+if C[0,0]:
+    for i in range(1,q+1):
+        if C[0,i]==0:
+            C=C*(g.transpose()**i)
+r=matrix(q+1,q+1,lambda i,j: 1 if (i+j)%(q+1)==q else 0)
+if q%4==1:
+    G=[I*C]+[(g**i)*r for i in range(1,2*q+3)]
+else:
+    G=[C]+[(g**i)*r for i in range(2*q+3)]
+X=block_matrix([[(lambda j: G[W[i,j]])(j) for j in range(q**2+1)] for i in range(q**2+1)])
+f=open('$outfile','w')
+for i in range(X.nrows()):
+    f.write(''.join('%3s' % x for x in X.row(i))+'\n')
+f.close()
+quit
+EOF
