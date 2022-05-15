@@ -19,7 +19,7 @@ done
 if [ -z "$outfile" -o -z "$infile" ]; then echo -e "${ERR} \e[1;32mRequires files.\e[0m\n"; exit 1; fi
 
 sage -q 1> /dev/null << EOF
-load('./funcs.sage')
+load('../funcs.sage')
 f=open('$infile','r')
 H=normalize_wmat(matrix(rmspace([[int(x) for x in y.split()] for y in f.read().split('\n')])))
 h=[matrix(H.row(i)) for i in range(H.nrows())]

@@ -19,7 +19,7 @@ done
 if [ -z "$outfile" -o -z "$infile" ]; then echo -e "${ERR} \e[1;32mRequires files.\e[0m\n"; exit 1; fi
 
 sage -q 1> /dev/null << EOF
-load('./funcs.sage')
+load('../funcs.sage')
 f=open('$infile','r')
 _a=rmspace(f.read().split('\n')[:-1])
 v=var(_a[0])

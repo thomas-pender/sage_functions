@@ -18,7 +18,7 @@ done
 if [ -z "$outfile" ]; then echo -e "${ERR} \e[1;32mRequires output file.\e[0m\n" ; exit 1 ; fi
 
 sage -q 1> /dev/null << EOF
-load('./funcs.sage')
+load('../funcs.sage')
 q=$1
 W=reduce(skew_conf(q**2),q+1)
 C=matrix(q+1,q+1,lambda i,j: 1 if i!=j else 0)
