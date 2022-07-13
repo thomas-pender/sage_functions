@@ -4,7 +4,7 @@ ERR="\n\e[1;5;7;32mERROR:\e[0m"
 
 if [ $# -eq 0 ]; then echo -e "${ERR} \e[1;32mRequires parameters.\e[0m\n" ; exit 1 ; fi
 
-eval set --$(getopt -o o:i: -- "$@")
+eval set -- $(getopt -o o:i: -- "$@")
 
 while [ -n "$1" ]; do
 case "$1" in

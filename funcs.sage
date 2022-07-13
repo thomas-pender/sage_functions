@@ -168,3 +168,20 @@ def hamming_dist(code):
     for x,y in combs(code,2):
         dist=min(dist,sum((lambda i: 1 if x[i]!=y[i] else 0)(i) for i in range(size)))
     return dist
+
+def gh_msls(q):
+    if not is_prime(q):
+        for i in range(2,floor(sqrt(q))+1):
+            if is_prime(i) and q%i==0:
+                p=i
+                break
+    else:
+        p=q
+    K.<x>=GF(p)[]
+    n=log(q,p)
+    F=list(K.quotient(GF(p**n).modulus()))
+    Flogs={F[i] : i for i in range(q)}   
+    H=matrix(q,q,lambda i,j: F[i]*F[j])
+    def addmult(a):
+        return matrix(q,q,lambda i,j: Flogs[a[i]-a[j]])
+    return [addmult(H.row(i)) for i in range(1,q)]
